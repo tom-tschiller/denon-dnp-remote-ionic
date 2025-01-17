@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<item>
+<chFlag>
+<value>0</value>
+<value>9</value>
+<value>1</value>
+<value>1</value>
+<value>1</value>
+<value>1</value>
+<value>1</value>
+<value>1</value>
+<value>0</value>
+<value>0</value>
+</chFlag>
+<szLine>
+<value>Cory Wong - Live At Montreux Jazz Fest (2023) FLAC</value>
+<value>Assassin (Live At Montreux Jazz Fest)</value>
+<value>Welcome 2 Minneapolis (Live At Montreux Jazz Fest)</value>
+<value>Bluebird (Live At Montreux Jazz Fest)</value>
+<value>Team Sports (Live At Montreux Jazz Fest)</value>
+<value>Let&amp;apos;s Go (Live At Montreux Jazz Fest)</value>
+<value>Meditation (Live At Montreux Jazz Fest)</value>
+<value>St. Paul (Live At Montreux Jazz Fest)</value>
+<value>   [    1/10  ]</value>
+<value></value>
+</szLine>
+<Art>
+<value>0</value>
+</Art>
+<PartyStatus>
+<value>3</value>
+</PartyStatus>
+<FavoriteLists>
+<value>OFF</value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+<value></value>
+</FavoriteLists>
+<Rhapsody><value>0</value></Rhapsody>
+<RhapsodySearch><value>0</value></RhapsodySearch>
+<iRadio><value>0</value></iRadio>
+<iRadioSearch><value>0</value></iRadioSearch>
+<Napster><value>0</value></Napster>
+<NapsterSearch><value>0</value></NapsterSearch>
+<Pandora><value>0</value></Pandora>
+<PandoraSearch><value>0</value></PandoraSearch>
+<Lastfm><value>0</value></Lastfm>
+<LastfmSearch><value>0</value></LastfmSearch>
+<InputFuncSelect><value>SERVER</value></InputFuncSelect>
+<NetFuncSelect><value>RHAPSODY</value></NetFuncSelect>
+<InputFuncSelectMain><value>SERVER</value></InputFuncSelectMain>
+<LastfmDisplay><value>TRUE</value></LastfmDisplay>
+<M-DAXSetting><value></value></M-DAXSetting>
+<HomeBtnClck><value>0</value></HomeBtnClck>
+<GetFavoriteList><value>0</value></GetFavoriteList>
+<FavoriteListPage><value>0</value></FavoriteListPage>
+</item>

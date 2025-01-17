@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<item>
+<Zone><value>MainZone</value></Zone>
+<Power><value>STANDBY</value></Power>
+<InputFuncList>
+<value>TUNER</value>
+<value>IRADIO</value>
+<value>SERVER</value>
+<value>NAPSTER</value>
+<value>LASTFM</value>
+<value>USB</value>
+<value>TUNER</value>
+</InputFuncList>
+<RenameSource>
+<value>TUNER</value>
+<value>Internet Radio</value>
+<value>Music Server</value>
+<value>Napster</value>
+<value>Last.fm</value>
+<value>USB/iPod</value>
+<value>TUNER</value>
+</RenameSource>
+<Model><value>720 E2</value></Model>
+<InputFuncSelect><value></value></InputFuncSelect>
+<MasterVolume><value>-80.0</value></MasterVolume>
+<Mute><value>off</value></Mute>
+</item>
