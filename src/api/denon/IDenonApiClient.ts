@@ -1,7 +1,9 @@
 import { Command } from "./Command"
-import { NetAudioStatus } from "./types"
+import { MainZoneXmlStatusLite, NetAudioStatus } from "./types"
 
 export interface IDenonApiClient {
-    executeCommand: (command: Command) => Promise<void>
-    netAudioStatus: () => Promise<NetAudioStatus | null>
+  setIp:(ip: string | undefined) => Promise<void>
+  executeCommand: (command: Command) => Promise<void>
+  mainStatusLite: () => Promise<MainZoneXmlStatusLite | null>
+  netAudioStatus: () => Promise<NetAudioStatus | null>
 }

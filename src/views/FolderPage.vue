@@ -7,7 +7,8 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">  
+      <ion-loading :isOpen="loadingIsOpen" message="Loading..."> </ion-loading>
+      <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">{{ $route.params.id }}</ion-title>
         </ion-toolbar>
@@ -19,150 +20,187 @@
         <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p> -->
 
         <ion-list>
-          <ion-item v-for="(displayLine, index) in displayLines" @click="clickItem(index)">
-            <ion-icon :icon="chevronForward" :class="{ invisible: !displayLine.IsSelected }"></ion-icon>
+          <ion-item
+            v-for="(displayLine, index) in displayLines"
+            @click="clickItem(index)"
+          >
+            <ion-icon
+              :icon="chevronForward"
+              :class="{ invisible: !displayLine.IsSelected }"
+            ></ion-icon>
             <ion-label>{{ displayLine.Text }}</ion-label>
           </ion-item>
         </ion-list>
 
-        <ion-button @click="updateList">
+        <ion-button @click="updateList" :disabled="progressBarIsOpen">
           <ion-icon :icon="refresh"></ion-icon>
         </ion-button>
-        <ion-button @click="executeCommandAndUpdate(Command.PowerOn)">
-          <ion-icon :icon="power"></ion-icon>
-        </ion-button>
-        <ion-button @click="executeCommandAndUpdate(Command.CursorLeft)">
+        <ion-button @click="executeCommandAndUpdate(Command.CursorLeft)" :disabled="progressBarIsOpen">
           <ion-icon :icon="chevronBack"></ion-icon>
         </ion-button>
-        <ion-button @click="executeCommandAndUpdate(Command.CursorRight)">
+        <ion-button @click="executeCommandAndUpdate(Command.CursorRight)" :disabled="progressBarIsOpen">
           <ion-icon :icon="chevronForward"></ion-icon>
         </ion-button>
-        <ion-button @click="executeCommandAndUpdate(Command.CursorUp)">
+        <ion-button @click="executeCommandAndUpdate(Command.CursorUp)" :disabled="progressBarIsOpen">
           <ion-icon :icon="chevronUp"></ion-icon>
         </ion-button>
-        <ion-button @click="executeCommandAndUpdate(Command.CursorDown)">
+        <ion-button @click="executeCommandAndUpdate(Command.CursorDown)" :disabled="progressBarIsOpen">
           <ion-icon :icon="chevronDown"></ion-icon>
         </ion-button>
-        <ion-button @click="executeCommandAndUpdate(Command.PagePrevious)">
+        <ion-button @click="executeCommandAndUpdate(Command.PagePrevious)" :disabled="progressBarIsOpen">
           <ion-icon :icon="caretDown"></ion-icon>
         </ion-button>
-        <ion-button @click="executeCommandAndUpdate(Command.PageNext)">
+        <ion-button @click="executeCommandAndUpdate(Command.PageNext)" :disabled="progressBarIsOpen">
           <ion-icon :icon="caretUp"></ion-icon>
         </ion-button>
-
       </div>
     </ion-content>
+    <ion-progress-bar v-if="progressBarIsOpen" type="indeterminate"></ion-progress-bar>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonTitle, IonToolbar, onIonViewWillEnter, onIonViewWillLeave } from '@ionic/vue';
-import { caretUp, caretDown, chevronBack, chevronForward, chevronDown, chevronUp, power, refresh } from 'ionicons/icons';
-import { Device, DeviceInfo } from '@capacitor/device';
-import { Preferences } from '@capacitor/preferences';
-import { DenonApiClient } from '@/api/denon/DenonApiClient'
-import { DenonApiClientDemo } from "@/api/denon/DenonApiClientDemo";
+import { inject, onMounted, ref, Ref } from "vue";
+import {
+  IonAlert,
+  IonButton,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonLoading,
+  IonPage,
+  IonProgressBar,
+  IonTitle,
+  IonToolbar,
+  onIonViewWillEnter,
+  onIonViewWillLeave,
+} from "@ionic/vue";
+import {
+  caretUp,
+  caretDown,
+  chevronBack,
+  chevronForward,
+  chevronDown,
+  chevronUp,
+  refresh,
+} from "ionicons/icons";
+import { Device, DeviceInfo } from "@capacitor/device";
 import { IDenonApiClient } from "@/api/denon/IDenonApiClient";
 import { Command } from "@/api/denon/Command";
+import { InputFuncSelect } from "@/api/denon/types";
 
-let deviceInfo: DeviceInfo
-let client: IDenonApiClient
+onMounted(async () => {
+  await logDeviceInfo();
+});
+
+const logDeviceInfo = async () => {
+  const deviceInfo = await Device.getInfo();
+  console.log(deviceInfo);
+};
+
+const progressBarIsOpen = ref<boolean>(false);
+const loadingIsOpen = ref<boolean>(false);
+
+const client: Ref<IDenonApiClient> | undefined = inject('client')
 
 // Vue lifecycle methods: https://ionicframework.com/docs/vue/lifecycle
 onIonViewWillEnter(async () => {
-  console.log("onIonViewWillEnter")
+  console.log("onIonViewWillEnter");
 
-  await initDenonApiClient()
+  if (client?.value != undefined) {
+    await setMusicServer();
+  }
 
   // TODO: register polling
-})
+});
 
 onIonViewWillLeave(async () => {
-  console.log("onIonViewWillLeave")
+  console.log("onIonViewWillLeave");
 
   // TODO: unregister polling
-})
+});
 
-onMounted(async () => {
-  await logDeviceInfo()
-})
+async function setMusicServer() {
+  loadingIsOpen.value = true;
 
-async function initDenonApiClient() {
-  const { value } = await Preferences.get({ key: 'IPAddress' });
+  let mainStatusLite = await client?.value.mainStatusLite();
 
-  console.log(`IP: ${value}!`);
-
-  const deviceInfo: DeviceInfo = await Device.getInfo();
-
-  if (deviceInfo.platform === 'web') {
-    client = new DenonApiClientDemo()
+  // TODO: add max tries
+  while (mainStatusLite?.InputFuncSelect != InputFuncSelect.MusicServer) {
+    console.log("set input source to music server");
+    await client?.value.executeCommand(Command.SourceServer);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    mainStatusLite = await client?.value.mainStatusLite();
   }
-  else {
-    client = new DenonApiClient('192.168.1.165') // TODO: use IP from Preferences
-  }
+
+  updateList()
+
+  loadingIsOpen.value = false;
 }
 
-const logDeviceInfo = async () => {
-  deviceInfo = await Device.getInfo();
-  console.log(deviceInfo)
-};
-
 async function executeCommandAndUpdate(command: Command) {
-  await client.executeCommand(command)
-  await new Promise(resolve => setTimeout(resolve, 500));
-  await updateList()
+  progressBarIsOpen.value = true
+
+  await client?.value.executeCommand(command);
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  await updateList();
+
+  progressBarIsOpen.value = false
 }
 
 async function clickItem(index: number) {
-  const selectedItemIndex = displayLines.value?.findIndex(item => item.IsSelected)
+  progressBarIsOpen.value = true
 
-  console.log("index: " + index + " selected: " + selectedItemIndex)
+  const selectedItemIndex = displayLines.value?.findIndex((item) => item.IsSelected);
+
+  console.log("index: " + index + " selected: " + selectedItemIndex);
 
   if (selectedItemIndex != undefined) {
     if (selectedItemIndex > index) {
       for (let i = 0; i < selectedItemIndex - index; i++) {
-        console.log("i:" + i)
-        await client.executeCommand(Command.CursorUp)
+        console.log("i:" + i);
+        await client?.value.executeCommand(Command.CursorUp);
       }
     }
     if (selectedItemIndex < index) {
       for (let i = 0; i < index - selectedItemIndex; i++) {
-        console.log("i:" + i)
-        await client.executeCommand(Command.CursorDown)
+        console.log("i:" + i);
+        await client?.value.executeCommand(Command.CursorDown);
       }
     }
-    await executeCommandAndUpdate(Command.CursorRight)
+    await executeCommandAndUpdate(Command.CursorRight);
   }
 }
 
 export type DisplayLine = {
-  Text: string
-  IsSelected: bool
-  IsFile: bool
-}
+  Text: string;
+  IsSelected: boolean;
+  IsFile: boolean;
+};
 
-const displayLines = ref<Array<DisplayLine>>()
+const displayLines = ref<Array<DisplayLine>>();
 
 async function updateList() {
-  let netAudioStatus = await client.netAudioStatus()
+  let netAudioStatus = await client?.value.netAudioStatus();
 
-  displayLines.value = new Array()
+  displayLines.value = new Array();
 
-  netAudioStatus.SzLine.forEach(element => {
-    let displayLine = <DisplayLine>{}
-    displayLine.Text = element
-    displayLine.IsSelected = false
-    displayLine.IsFile = false
+  netAudioStatus?.SzLine.forEach((element) => {
+    let displayLine = <DisplayLine>{};
+    displayLine.Text = element;
+    displayLine.IsSelected = false;
+    displayLine.IsFile = false;
 
-    displayLines.value.push(displayLine)
+    displayLines.value?.push(displayLine);
   });
 
-  var index = netAudioStatus.ChFlag.findIndex(item => item & 8) // TODO: check for other flags
+  var index = netAudioStatus.ChFlag.findIndex((item) => item & 8); // TODO: check for other flags
 
-  displayLines.value[index].IsSelected = true
+  displayLines.value[index].IsSelected = true;
 }
-
 </script>
 
 <style scoped>

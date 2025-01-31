@@ -4,6 +4,14 @@ App uses clear-text traffic, must be defined in AndroidManifest.xml
 
 App uses Capacitor Http API (https://capacitorjs.com/docs/apis/http) due to CORS restrictions. Overrides default fetch API calls
 
+List Android deviced to run on:
+
+ionic cap run android --list
+
+Run on Android device:
+
+ionic cap run android
+
 TODO:
 * Swipe to scroll up and down
 * Bugfix page up and down (index)

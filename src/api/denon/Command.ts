@@ -9,4 +9,6 @@ export enum Command {
     Enter = 'NS94',
     PageNext = 'NS9X',
     PagePrevious = 'NS9Y',
+    SourceInternetRadio = 'SIIRADIO',
+    SourceServer = 'SISERVER',
 }

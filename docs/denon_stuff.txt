@@ -1,0 +1,14 @@
+Get Status:
+http://192.168.1.165/goform/formMainZone_MainZoneXmlStatus.xml
+
+Get Network Status:
+http://192.168.1.165/goform/formNetAudio_StatusXml.xml
+
+Send Command (Page Up / Down):
+http://192.168.1.165/goform/formiPhoneAppDirect.xml?NS9Y
+
+DENON AVR control protocol:
+https://assets.denon.com/documentmaster/master/avr2112ci_avr1912_protocol_v740.pdf
+
+Help:
+https://knx-user-forum.de/forum/supportforen/openhab/32557-denon-mit-http-binding-steuern

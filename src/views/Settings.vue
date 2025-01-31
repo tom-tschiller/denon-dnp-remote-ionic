@@ -18,41 +18,31 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { inject, onMounted, ref, Ref } from "vue";
 import { IonContent, IonHeader, IonInput, IonItem, IonList, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import { Preferences } from '@capacitor/preferences';
+import { SettingsManager } from "@/settings/SettingsManager";
+import { DenonDeviceController } from "@/api/denon/DenonDeviceController";
 
 const ipAddress = ref<string>()
+
+const client: Ref<DenonDeviceController> | undefined = inject('client')
+
+const settingsManager: SettingsManager = new SettingsManager()
 
 onMounted(async () => {
   await loadIpAddress()
 })
 
 async function loadIpAddress() {
-  const { value } = await Preferences.get({ key: 'IPAddress' });
-
-  console.log(`IP: ${value}!`);
-
-  ipAddress.value = value;
+  ipAddress.value = await settingsManager.loadIpAddress() ?? '';
 }
 
-async function saveIpAddress() {
-  await Preferences.set({
-    key: 'IPAddress',
-    value: event.target.value,
-  });
-}
-
-async function validateIP(event) {
-  console.log(event.target.value)
-
-  if (event.target.value == '') {
-    await Preferences.remove({ key: 'IPAddress' });
-  }
-
-  if (true) { // TODO: validate IP address before saving
-    await saveIpAddress()
-  }
+async function validateIP() {
+  // https://stackoverflow.com/questions/4460586/javascript-regular-expression-to-check-for-ip-addresses
+  if (ipAddress.value == undefined || ipAddress.value == '' || /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipAddress.value)) {  
+    await settingsManager.saveIpAddress(ipAddress.value)
+    await client?.value.setIp(ipAddress.value)
+  }  
 }
 
 </script>
